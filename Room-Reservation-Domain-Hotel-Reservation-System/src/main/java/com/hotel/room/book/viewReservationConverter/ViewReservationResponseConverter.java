@@ -9,75 +9,64 @@ import org.springframework.stereotype.Service;
 import com.hotel.room.book.service.GuestService;
 import com.hotel.room.book.service.RoomService;
 import com.hotel.room.book.service.RoomsReservedService;
-import com.room.reservation.domain.model.database.Guest;
-import com.room.reservation.domain.model.database.Reservation;
-import com.room.reservation.domain.model.database.Room;
-import com.room.reservation.domain.model.database.RoomsReserved;
-import com.room.reservation.domain.model.view.GuestViewRequest;
-import com.room.reservation.domain.model.view.RoomView;
-import com.room.reservation.domain.model.view.StatusView;
-import com.room.reservation.domain.model.view.ViewReservationResponse;
+import com.hotel.room.reservation.model.database.Guest;
+import com.hotel.room.reservation.model.database.Reservation;
+import com.hotel.room.reservation.model.database.Room;
+import com.hotel.room.reservation.model.database.RoomsReserved;
+import com.hotel.room.reservation.model.view.GuestView;
+import com.hotel.room.reservation.model.view.RoomView;
+import com.hotel.room.reservation.model.view.StatusView;
+import com.hotel.room.reservation.model.view.ViewReservationResponse;
 
 @Service
 public class ViewReservationResponseConverter {
 
 	@Autowired
 	private GuestService guestService;
-	
-	@Autowired
-	private RoomService roomService;
+
 
 	@Autowired
 	private RoomsReservedService roomsReservedService;
 
 	public ViewReservationResponse databaseToViewResObjectConverter(Reservation reservation) {
 
+		// Fetch database Guest information
+		Guest guest = guestService.viewEntity(reservation.getGuest().getGuest_id());
+
 		ViewReservationResponse viewReservationResponse = new ViewReservationResponse();
 		viewReservationResponse.setCheckInDt(reservation.getCheck_in_date());
 		viewReservationResponse.setCheckOutDt(reservation.getCheck_out_date());
-
-		Guest guest = guestService.onView(String.valueOf(reservation.getGuest().getGuest_id()));
+		viewReservationResponse.setGuestCount(reservation.getGuest_count());
 
 		// Prepare Guest View Information
-		GuestViewRequest guestViewRequest = new GuestViewRequest();
+		GuestView guestViewRequest = new GuestView();
 		guestViewRequest.setAge(guest.getAge());
 		guestViewRequest.setFirstName(guest.getFirst_name());
 		guestViewRequest.setLastName(guest.getLast_name());
 		guestViewRequest.setIdentifierNumber(guest.getIdentifier_number());
 		guestViewRequest.setPhoneNumber(guest.getPhone());
+		guestViewRequest.setGuestId(guest.getGuest_id());
 		viewReservationResponse.setGuest(guestViewRequest);
 
-		// Prepare multiple Room View Information
-		List<RoomView> rooms=new ArrayList();
 		int reservationId = reservation.getReservation_id();
-		
-		// Fetch list of Database entity RoomReserved using reservationId
-		List<Object> roomsReservedList = roomsReservedService.getlistFindByAnotherField(String.valueOf(reservationId));
-		if (roomsReservedList.size() > 0) {
-			roomsReservedList.stream().forEach(roomRes -> {
-				RoomsReserved roomReserved = RoomsReserved.class.cast(roomRes);
-				String roomNumber=roomReserved.getRooms_booked();
-				Room room=roomService.onView(roomNumber);
-				
-				//Prepare each room deatils
-				RoomView roomView=new RoomView();
-				roomView.setRoomFeatures(room.getRoom_features());
-				roomView.setRoomNumber(room.getRoom_number());
-				roomView.setRoomRate(room.getRoom_rate());
-				roomView.setRoomType(room.getRoom_type());
-				rooms.add(roomView);
-			});
-		}
-		viewReservationResponse.setRooms(rooms);
 
-		// viewReservationResponse.setGuestCount(guestCount);
+		// Fetch list of Database entity RoomReserved using reservationId
+		List<Object> roomsReservedList = roomsReservedService.getlistFindByReservationId(reservationId);
+		if (roomsReservedList.size() > 0) {
+			Object obj = roomsReservedList.get(0);
+			RoomsReserved roomReserved = RoomsReserved.class.cast(obj);
+			
+			viewReservationResponse.setGuestCount(Integer.parseInt(roomReserved.getRooms_booked()));
+			viewReservationResponse.setRoomtype(roomReserved.getRoom_type());
+		}
+
 
 		// Prepare Status
 		StatusView status = new StatusView();
 		status.setMessage("SUCCESS");
-		status.setStatusCode("200 OK status code");
+		status.setStatusCode("SUCCESS with 200 OK status code");
 		viewReservationResponse.setStatus(status);
-		
+
 		return viewReservationResponse;
 	}
 }

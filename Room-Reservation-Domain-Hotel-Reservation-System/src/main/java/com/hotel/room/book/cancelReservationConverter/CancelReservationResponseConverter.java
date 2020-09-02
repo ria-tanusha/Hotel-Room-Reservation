@@ -2,8 +2,8 @@ package com.hotel.room.book.cancelReservationConverter;
 
 import org.springframework.stereotype.Service;
 
-import com.room.reservation.domain.model.view.DeleteReservationResponse;
-import com.room.reservation.domain.model.view.StatusView;
+import com.hotel.room.reservation.model.view.DeleteReservationResponse;
+import com.hotel.room.reservation.model.view.StatusView;
 
 @Service
 public class CancelReservationResponseConverter {

@@ -6,10 +6,9 @@ import org.springframework.stereotype.Service;
 import com.hotel.room.book.cancelReservationConverter.CancelReservationRequestConverter;
 import com.hotel.room.book.cancelReservationConverter.CancelReservationResponseConverter;
 import com.hotel.room.book.service.ReservationService;
-import com.room.reservation.domain.model.database.Guest;
-import com.room.reservation.domain.model.database.Reservation;
-import com.room.reservation.domain.model.view.DeleteReservationRequest;
-import com.room.reservation.domain.model.view.DeleteReservationResponse;
+import com.hotel.room.reservation.model.database.Reservation;
+import com.hotel.room.reservation.model.view.DeleteReservationRequest;
+import com.hotel.room.reservation.model.view.DeleteReservationResponse;
 
 @Service
 public class DeleteReservationProcessor {
@@ -29,7 +28,7 @@ public class DeleteReservationProcessor {
 		Reservation reservation = cancelReservationRequestConverter.viewToDatabaseReObjectConverter(deleteReservationRequest);
 
 		// Delete Reservation through JPA repository layer
-		reservationService.onCreate(reservation);
+		reservationService.createOrUpdate(reservation);
 
 		// Convert Database response into view response
 		DeleteReservationResponse deleteReservationResponse = cancelReservationResponseConverter
