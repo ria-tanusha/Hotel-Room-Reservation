@@ -1,20 +1,16 @@
 package com.hotel.room.book.viewReservationConverter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hotel.room.book.service.GuestService;
-import com.hotel.room.book.service.RoomService;
 import com.hotel.room.book.service.RoomsReservedService;
 import com.hotel.room.reservation.model.database.Guest;
 import com.hotel.room.reservation.model.database.Reservation;
-import com.hotel.room.reservation.model.database.Room;
 import com.hotel.room.reservation.model.database.RoomsReserved;
 import com.hotel.room.reservation.model.view.GuestView;
-import com.hotel.room.reservation.model.view.RoomView;
 import com.hotel.room.reservation.model.view.StatusView;
 import com.hotel.room.reservation.model.view.ViewReservationResponse;
 
@@ -23,7 +19,6 @@ public class ViewReservationResponseConverter {
 
 	@Autowired
 	private GuestService guestService;
-
 
 	@Autowired
 	private RoomsReservedService roomsReservedService;
@@ -55,11 +50,10 @@ public class ViewReservationResponseConverter {
 		if (roomsReservedList.size() > 0) {
 			Object obj = roomsReservedList.get(0);
 			RoomsReserved roomReserved = RoomsReserved.class.cast(obj);
-			
-			viewReservationResponse.setGuestCount(Integer.parseInt(roomReserved.getRooms_booked()));
+
+			viewReservationResponse.setRoomCounnt(Integer.parseInt(roomReserved.getRooms_booked()));
 			viewReservationResponse.setRoomtype(roomReserved.getRoom_type());
 		}
-
 
 		// Prepare Status
 		StatusView status = new StatusView();
