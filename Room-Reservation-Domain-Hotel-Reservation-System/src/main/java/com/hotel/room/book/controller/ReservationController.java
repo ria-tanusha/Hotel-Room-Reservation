@@ -49,7 +49,7 @@ public class ReservationController {
 
 	@RequestMapping(value = "/reservation", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity<Response<RoomBookingViewResponse>> bookReservation(
-			@Valid @RequestBody RoomBookingViewRequest roomBookingRequest) {
+			 @RequestBody RoomBookingViewRequest roomBookingRequest) {
 
 		Response response = new Response();
 		response.setData(bookReservationProcessor.process(roomBookingRequest));
